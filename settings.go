@@ -5,6 +5,7 @@ import (
 	kubewarden_protocol "github.com/kubewarden/policy-sdk-go/protocol"
 	"github.com/mailru/easyjson"
 
+	"errors"
 	"fmt"
 )
 
@@ -12,17 +13,15 @@ import (
 
 // No special checks have to be done
 func (s *Settings) Valid() (bool, error) {
-	return true, nil
-}
-
-func (s *Settings) IsNameDenied(name string) bool {
-	for _, deniedName := range s.DeniedNames {
-		if deniedName == name {
-			return true
+	if len(s.PropagatedLabels) == 0 {
+		return false, errors.New("some label must be provided")
+	}
+	for _, label := range s.PropagatedLabels {
+		if len(label) == 0 {
+			return false, errors.New("empty labels are not allowed")
 		}
 	}
-
-	return false
+	return true, nil
 }
 
 func NewSettingsFromValidationReq(validationReq *kubewarden_protocol.ValidationRequest) (Settings, error) {

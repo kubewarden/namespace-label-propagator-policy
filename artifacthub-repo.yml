@@ -1,5 +1,5 @@
 ---
-repositoryID: <THE REPOSITORY ID INSIDE OF ARTIFACTHUB> # obtained after publishing the policy for the 1st time
+repositoryID: 3d57645b-8d31-457d-a705-1cb6b17838ca
 owners:
-- name: YOUR NAME
-  email: <YOUR EMAIL>
+- name: Kubewarden developers
+  email: cncf-kubewarden-maintainers@lists.cncf.io

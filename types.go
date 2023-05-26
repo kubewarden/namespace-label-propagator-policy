@@ -19,5 +19,5 @@ package main
 // support of Go reflection.
 
 type Settings struct {
-	DeniedNames []string `json:"denied_names"`
+	PropagatedLabels []string `json:"propagatedLabels"`
 }
