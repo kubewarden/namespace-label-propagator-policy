@@ -19,10 +19,12 @@ github.com/kubewarden/k8s-objects/apimachinery/pkg/api/resource
 github.com/kubewarden/k8s-objects/apimachinery/pkg/apis/meta/v1
 github.com/kubewarden/k8s-objects/apimachinery/pkg/runtime/schema
 github.com/kubewarden/k8s-objects/apimachinery/pkg/util/intstr
-# github.com/kubewarden/policy-sdk-go v0.4.0
+# github.com/kubewarden/policy-sdk-go v0.4.1
 ## explicit; go 1.20
 github.com/kubewarden/policy-sdk-go
 github.com/kubewarden/policy-sdk-go/constants
+github.com/kubewarden/policy-sdk-go/pkg/capabilities
+github.com/kubewarden/policy-sdk-go/pkg/capabilities/kubernetes
 github.com/kubewarden/policy-sdk-go/protocol
 github.com/kubewarden/policy-sdk-go/testing
 # github.com/mailru/easyjson v0.7.7

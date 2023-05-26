@@ -1,0 +1,17 @@
+questions:
+  - default: null
+    description: >-
+      Kubewarden policy designed to automatically propagate labels defined in a Kubernetes namespace to the associated resources within that namespace
+    group: Settings
+    label: Description
+    required: false
+    hide_input: true
+    type: string
+    variable: description
+  - default: []
+    tooltip: A list of the Namespace labels that should be propagated to the resources
+    group: Settings
+    label: Propagated labels
+    required: true
+    type: array[
+    variable: propagatedLabels

@@ -2,7 +2,7 @@
   "uid": "1299d386-525b-4032-98ae-1949f69f9cfc",
   "kind": {
     "group": "",
-    "kind": "Pod",
+    "kind": "pod",
     "version": "v1"
   },
   "namespace": "default",
@@ -13,7 +13,7 @@
       "name": "test-pod",
       "namespace": "default",
       "labels": {
-        "cccenter": "zpto",
+        "cccenter": "foo",
         "owner": "team-alpha",
 	"location": "Earth"
       }
