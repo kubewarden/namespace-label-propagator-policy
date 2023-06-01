@@ -21,7 +21,7 @@ annotations:
   io.artifacthub.displayName: Namespace label propagator
   io.artifacthub.resources: Pod, ReplicationController, Deployment, ReplicaSet, StatefulSet, DaemonSet, Job, CronJob
   io.artifacthub.keywords:  policy, kubewarden, namespace, label
-  io.kubewarden.policy.ociUrl: ghcr.io/yourorg/policies/policy-name # must match release workflow oci-target
+  io.kubewarden.policy.ociUrl: ghcr.io/kubewarden/policies/namespace-label-propagator
   # kubewarden specific:
   io.kubewarden.policy.title: namespace-label-propagator-policy
   io.kubewarden.policy.description: Kubewarden policy designed to automatically propagate labels defined in a Kubernetes namespace to the associated resources within that namespace

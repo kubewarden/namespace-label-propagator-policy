@@ -7,13 +7,13 @@
 version: 0.1.0
 name: namespace-label-propagator-policy
 displayName: Namespace label propagator
-createdAt: 2023-05-31T13:26:08.402273926Z
+createdAt: 2023-06-01T18:43:44.723280442Z
 description: Kubewarden policy designed to automatically propagate labels defined in a Kubernetes namespace to the associated resources within that namespace
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/namespace-label-propagator-policy
 containersImages:
 - name: policy
-  image: ghcr.io/yourorg/policies/policy-name:v0.1.0
+  image: ghcr.io/kubewarden/policies/namespace-label-propagator:v0.1.0
 keywords:
 - policy
 - kubewarden
@@ -27,7 +27,7 @@ links:
 install: |
   The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl):
   ```console
-  kwctl pull ghcr.io/yourorg/policies/policy-name:v0.1.0
+  kwctl pull ghcr.io/kubewarden/policies/namespace-label-propagator:v0.1.0
   ```
 maintainers:
 - name: Kubewarden developers
