@@ -1,31 +1,56 @@
 rules:
-  - apiGroups: [""]
-    apiVersions: ["v1"]
-    resources: ["replicationcontrollers", "pods"]
-    operations: ["CREATE", "UPDATE"]
-  - apiGroups: ["apps"]
-    apiVersions: ["v1"]
-    resources: ["deployments","replicasets","statefulsets","daemonsets"]
-    operations: ["CREATE", "UPDATE"]
-  - apiGroups: ["batch"]
-    apiVersions: ["v1"]
-    resources: ["jobs","cronjobs"]
-    operations: ["CREATE", "UPDATE"]
+  - apiGroups:
+      - ''
+    apiVersions:
+      - v1
+    resources:
+      - replicationcontrollers
+      - pods
+    operations:
+      - CREATE
+      - UPDATE
+  - apiGroups:
+      - apps
+    apiVersions:
+      - v1
+    resources:
+      - deployments
+      - replicasets
+      - statefulsets
+      - daemonsets
+    operations:
+      - CREATE
+      - UPDATE
+  - apiGroups:
+      - batch
+    apiVersions:
+      - v1
+    resources:
+      - jobs
+      - cronjobs
+    operations:
+      - CREATE
+      - UPDATE
 mutating: true
 contextAwareResources:
-- apiVersion: v1
-  kind: Namespace
+  - apiVersion: v1
+    kind: Namespace
 executionMode: kubewarden-wapc
 annotations:
-  # artifacthub specific:
+  # artifacthub specific
   io.artifacthub.displayName: Namespace label propagator
-  io.artifacthub.resources: Pod, ReplicationController, Deployment, ReplicaSet, StatefulSet, DaemonSet, Job, CronJob
-  io.artifacthub.keywords:  policy, kubewarden, namespace, label
+  io.artifacthub.resources: Pod, ReplicationController, Deployment, ReplicaSet, StatefulSet,
+    DaemonSet, Job, CronJob
+  io.artifacthub.keywords: policy, kubewarden, namespace, label
+  # kubewarden specific
   io.kubewarden.policy.ociUrl: ghcr.io/kubewarden/policies/namespace-label-propagator
-  # kubewarden specific:
   io.kubewarden.policy.title: namespace-label-propagator-policy
-  io.kubewarden.policy.description: Kubewarden policy designed to automatically propagate labels defined in a Kubernetes namespace to the associated resources within that namespace
-  io.kubewarden.policy.author: "Kubewarden developers <cncf-kubewarden-maintainers@lists.cncf.io>"
+  io.kubewarden.policy.description: Kubewarden policy designed to automatically propagate
+    labels defined in a Kubernetes namespace to the associated resources within that
+    namespace
+  io.kubewarden.policy.author: Kubewarden developers <cncf-kubewarden-maintainers@lists.cncf.io>
   io.kubewarden.policy.url: https://github.com/kubewarden/namespace-label-propagator-policy
   io.kubewarden.policy.source: https://github.com/kubewarden/namespace-label-propagator-policy
   io.kubewarden.policy.license: Apache-2.0
+  io.kubewarden.policy.category: Resources label enforcer
+  io.kubewarden.policy.severity: low
