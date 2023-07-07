@@ -53,4 +53,4 @@ annotations:
   io.kubewarden.policy.source: https://github.com/kubewarden/namespace-label-propagator-policy
   io.kubewarden.policy.license: Apache-2.0
   io.kubewarden.policy.category: Resources label enforcer
-  io.kubewarden.policy.severity: medium
+  io.kubewarden.policy.severity: low
