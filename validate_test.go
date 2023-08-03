@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"testing"
+
 	appsv1 "github.com/kubewarden/k8s-objects/api/apps/v1"
 	batchv1 "github.com/kubewarden/k8s-objects/api/batch/v1"
 	corev1 "github.com/kubewarden/k8s-objects/api/core/v1"
@@ -11,8 +13,6 @@ import (
 	capabilities "github.com/kubewarden/policy-sdk-go/pkg/capabilities"
 	kubewarden_protocol "github.com/kubewarden/policy-sdk-go/protocol"
 	kubewarden_testing "github.com/kubewarden/policy-sdk-go/testing"
-	"github.com/mailru/easyjson"
-	"testing"
 )
 
 const SHOULD_ACCEPT = true
@@ -21,7 +21,7 @@ const SHOULD_MUTATE = true
 const NO_MUTATION = false
 const TEST_NAMESPACE = "default"
 
-func buildValidationRequest(propagatedLabels []string, resource easyjson.Marshaler, kind string) ([]byte, error) {
+func buildValidationRequest(propagatedLabels []string, resource interface{}, kind string) ([]byte, error) {
 	settings := Settings{PropagatedLabels: propagatedLabels}
 	payload, err := kubewarden_testing.BuildValidationRequest(resource, &settings)
 
@@ -52,7 +52,7 @@ func buildWapcClient(namespaceLabels map[string]string) error {
 
 func basicResposeValidation(responsePayload []byte, accepted, should_mutate bool) (*kubewarden_protocol.ValidationResponse, error) {
 	var response kubewarden_protocol.ValidationResponse
-	if err := easyjson.Unmarshal(responsePayload, &response); err != nil {
+	if err := json.Unmarshal(responsePayload, &response); err != nil {
 		return nil, fmt.Errorf("Unexpected error: %+v", err)
 	}
 
@@ -87,13 +87,13 @@ func validateLabels(resourceLabels, expectedLabels map[string]string) error {
 
 func updateValidationRequestKindAndNamespace(payload []byte, kind string) ([]byte, error) {
 	validationRequest := kubewarden_protocol.ValidationRequest{}
-	err := easyjson.Unmarshal(payload, &validationRequest)
+	err := json.Unmarshal(payload, &validationRequest)
 	if err != nil {
 		return nil, err
 	}
 	validationRequest.Request.Kind.Kind = kind
 	validationRequest.Request.Namespace = TEST_NAMESPACE
-	return easyjson.Marshal(validationRequest)
+	return json.Marshal(validationRequest)
 }
 
 func TestPodWithNoLabels(t *testing.T) {
@@ -138,7 +138,7 @@ func TestPodWithNoLabels(t *testing.T) {
 		t.Errorf("Unexpected error: %+v", err)
 	}
 
-	if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+	if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 		t.Errorf("Unexpected error: %+v", err)
 	}
 
@@ -191,7 +191,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 		propagatedLabels []string
 		namespaceLabels  map[string]string
 		expectedLabels   map[string]string
-		resource         easyjson.Marshaler
+		resource         interface{}
 		kind             string
 		accept           bool
 		mutate           bool
@@ -397,7 +397,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 			switch tc.kind {
 			case POD_KIND:
 				resource := corev1.Pod{}
-				if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+				if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 					t.Errorf("Unexpected error: %+v", err)
 				}
 
@@ -406,7 +406,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 				}
 			case DEPLOYMENT_KIND:
 				resource := appsv1.Deployment{}
-				if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+				if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 					t.Errorf("Unexpected error: %+v", err)
 				}
 				if err := validateLabels(resource.Metadata.Labels, tc.expectedLabels); err != nil {
@@ -417,7 +417,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 				}
 			case REPLICASET_KIND:
 				resource := appsv1.ReplicaSet{}
-				if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+				if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 					t.Errorf("Unexpected error: %+v", err)
 				}
 				if err := validateLabels(resource.Metadata.Labels, tc.expectedLabels); err != nil {
@@ -428,7 +428,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 				}
 			case DAEMONSET_KIND:
 				resource := appsv1.DaemonSet{}
-				if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+				if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 					t.Errorf("Unexpected error: %+v", err)
 				}
 				if err := validateLabels(resource.Metadata.Labels, tc.expectedLabels); err != nil {
@@ -439,7 +439,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 				}
 			case STATEFULSET_KIND:
 				resource := appsv1.StatefulSet{}
-				if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+				if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 					t.Errorf("Unexpected error: %+v", err)
 				}
 				if err := validateLabels(resource.Metadata.Labels, tc.expectedLabels); err != nil {
@@ -450,7 +450,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 				}
 			case REPLICATIONCONTROLLER_KIND:
 				resource := corev1.ReplicationController{}
-				if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+				if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 					t.Errorf("Unexpected error: %+v", err)
 				}
 				if err := validateLabels(resource.Metadata.Labels, tc.expectedLabels); err != nil {
@@ -461,7 +461,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 				}
 			case JOB_KIND:
 				resource := batchv1.Job{}
-				if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+				if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 					t.Errorf("Unexpected error: %+v", err)
 				}
 				if err := validateLabels(resource.Metadata.Labels, tc.expectedLabels); err != nil {
@@ -472,7 +472,7 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 				}
 			case CRONJOB_KIND:
 				resource := batchv1.CronJob{}
-				if err := easyjson.Unmarshal(mutatedResourceJSON, &resource); err != nil {
+				if err := json.Unmarshal(mutatedResourceJSON, &resource); err != nil {
 					t.Errorf("Unexpected error: %+v", err)
 				}
 				if err := validateLabels(resource.Metadata.Labels, tc.expectedLabels); err != nil {
