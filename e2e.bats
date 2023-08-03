@@ -28,7 +28,7 @@
   # check if patch operation
   patch=$(echo "${output}" | grep '{.*\"patch\".*}'| jq -r ".patch" | base64 --decode)
   echo "patch=$patch"
-  echo ${patch} | jq -e "[.[].op == \"add\" and .[].value.cccenter == \"zpto\"] | any"
+  echo ${patch} | jq -e "[.[].op == \"add\" and .[].value.cccenter? == \"zpto\"] | any"
 }
 
 @test "Mutate resource with wrong labels value" {
