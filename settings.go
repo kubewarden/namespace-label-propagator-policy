@@ -1,13 +1,17 @@
 package main
 
 import (
-	kubewarden "github.com/kubewarden/policy-sdk-go"
-	kubewarden_protocol "github.com/kubewarden/policy-sdk-go/protocol"
-	"github.com/mailru/easyjson"
-
+	"encoding/json"
 	"errors"
 	"fmt"
+
+	kubewarden "github.com/kubewarden/policy-sdk-go"
+	kubewarden_protocol "github.com/kubewarden/policy-sdk-go/protocol"
 )
+
+type Settings struct {
+	PropagatedLabels []string `json:"propagatedLabels"`
+}
 
 // The Settings class is defined inside of the `types.go` file
 
@@ -26,7 +30,7 @@ func (s *Settings) Valid() (bool, error) {
 
 func NewSettingsFromValidationReq(validationReq *kubewarden_protocol.ValidationRequest) (Settings, error) {
 	settings := Settings{}
-	err := easyjson.Unmarshal(validationReq.Settings, &settings)
+	err := json.Unmarshal(validationReq.Settings, &settings)
 	return settings, err
 }
 
@@ -34,7 +38,7 @@ func validateSettings(payload []byte) ([]byte, error) {
 	logger.Info("validating settings")
 
 	settings := Settings{}
-	err := easyjson.Unmarshal(payload, &settings)
+	err := json.Unmarshal(payload, &settings)
 	if err != nil {
 		return kubewarden.RejectSettings(kubewarden.Message(fmt.Sprintf("Provided settings are not valid: %v", err)))
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -11,7 +12,6 @@ import (
 	kubewarden "github.com/kubewarden/policy-sdk-go"
 	kubernetes "github.com/kubewarden/policy-sdk-go/pkg/capabilities/kubernetes"
 	kubewarden_protocol "github.com/kubewarden/policy-sdk-go/protocol"
-	"github.com/mailru/easyjson"
 )
 
 const DEPLOYMENT_KIND = "deployment"
@@ -42,7 +42,7 @@ func getNamespace(validationRequest kubewarden_protocol.ValidationRequest) (*cor
 		return nil, fmt.Errorf("Cannot get namespace data: %s", err)
 	}
 	namespace := &corev1.Namespace{}
-	if err := easyjson.Unmarshal(responseBytes, namespace); err != nil {
+	if err := json.Unmarshal(responseBytes, namespace); err != nil {
 		return nil, fmt.Errorf("Cannot parse namespace data: %s", err)
 	}
 	return namespace, nil
@@ -81,7 +81,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 	switch strings.ToLower(object.Request.Kind.Kind) {
 	case DEPLOYMENT_KIND:
 		deployment := appsv1.Deployment{}
-		if err := easyjson.Unmarshal(object.Request.Object, &deployment); err != nil {
+		if err := json.Unmarshal(object.Request.Object, &deployment); err != nil {
 			return nil, err
 		}
 		objChanged := propagateLabels(deployment.Metadata, labelsToPropagate)
@@ -91,7 +91,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 		}
 	case REPLICASET_KIND:
 		replicaset := appsv1.ReplicaSet{}
-		if err := easyjson.Unmarshal(object.Request.Object, &replicaset); err != nil {
+		if err := json.Unmarshal(object.Request.Object, &replicaset); err != nil {
 			return nil, err
 		}
 		objChanged := propagateLabels(replicaset.Metadata, labelsToPropagate)
@@ -101,7 +101,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 		}
 	case STATEFULSET_KIND:
 		statefulset := appsv1.StatefulSet{}
-		if err := easyjson.Unmarshal(object.Request.Object, &statefulset); err != nil {
+		if err := json.Unmarshal(object.Request.Object, &statefulset); err != nil {
 			return nil, err
 		}
 		objChanged := propagateLabels(statefulset.Metadata, labelsToPropagate)
@@ -111,7 +111,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 		}
 	case DAEMONSET_KIND:
 		daemonset := appsv1.DaemonSet{}
-		if err := easyjson.Unmarshal(object.Request.Object, &daemonset); err != nil {
+		if err := json.Unmarshal(object.Request.Object, &daemonset); err != nil {
 			return nil, err
 		}
 		objChanged := propagateLabels(daemonset.Metadata, labelsToPropagate)
@@ -121,7 +121,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 		}
 	case REPLICATIONCONTROLLER_KIND:
 		replicationController := corev1.ReplicationController{}
-		if err := easyjson.Unmarshal(object.Request.Object, &replicationController); err != nil {
+		if err := json.Unmarshal(object.Request.Object, &replicationController); err != nil {
 			return nil, err
 		}
 		objChanged := propagateLabels(replicationController.Metadata, labelsToPropagate)
@@ -131,7 +131,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 		}
 	case CRONJOB_KIND:
 		cronjob := batchv1.CronJob{}
-		if err := easyjson.Unmarshal(object.Request.Object, &cronjob); err != nil {
+		if err := json.Unmarshal(object.Request.Object, &cronjob); err != nil {
 			return nil, err
 		}
 		objChanged := propagateLabels(cronjob.Metadata, labelsToPropagate)
@@ -141,7 +141,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 		}
 	case JOB_KIND:
 		job := batchv1.Job{}
-		if err := easyjson.Unmarshal(object.Request.Object, &job); err != nil {
+		if err := json.Unmarshal(object.Request.Object, &job); err != nil {
 			return nil, err
 		}
 		objChanged := propagateLabels(job.Metadata, labelsToPropagate)
@@ -151,7 +151,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 		}
 	case POD_KIND:
 		pod := corev1.Pod{}
-		if err := easyjson.Unmarshal(object.Request.Object, &pod); err != nil {
+		if err := json.Unmarshal(object.Request.Object, &pod); err != nil {
 			return nil, err
 		}
 		objChanged := propagateLabels(pod.Metadata, labelsToPropagate)
@@ -167,7 +167,7 @@ func updateResourceLabels(object kubewarden_protocol.ValidationRequest, labelsTo
 func validate(payload []byte) ([]byte, error) {
 	// Create a ValidationRequest instance from the incoming payload
 	validationRequest := kubewarden_protocol.ValidationRequest{}
-	err := easyjson.Unmarshal(payload, &validationRequest)
+	err := json.Unmarshal(payload, &validationRequest)
 	if err != nil {
 		return kubewarden.RejectRequest(
 			kubewarden.Message(err.Error()),
