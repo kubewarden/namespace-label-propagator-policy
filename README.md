@@ -34,3 +34,33 @@ namespace object to the resource itself.
 
 Label propagation only occurs if the desired labels are already set on the namespace.
 If a label is not defined in the namespace, it will not be propagated to the workloads
+
+## Limitations
+
+The policy propagates the labels only when a object is created or updated.
+
+### Changes to the Namespace
+
+Adding a new relevant label to a Namespace is not going to cause all the resources
+inside of it to be updated. The individual resources will be updated when a UPDATE
+action affects them.
+
+Changing the value of a relevant label inside of the Namespace is not going to update
+all the resources defined inside of it. The individual resources will be updated when
+a UPDATE action affects them.
+
+Removing a relevant label from the Namespace is not going to cause its removal from
+all the resources that are already defined inside of it. The resources will retain
+this label forever, even if they are processed again by the policy because of a
+UPDATE action.
+
+### Changes to the policy settings
+
+Adding a new label to the list of `propagatedLabels` is not going to udpdate all
+the resources already defined inside of the Namespace. The individual resources
+will be updated when a UPDATE action affects them.
+
+Removing a label from the list of `propagatedLabels` is not going to remove it
+from the resources that already exist inside of the Namespace. The resources will
+retain this label forever, even if they are processed again by the policy because of a
+UPDATE action.
