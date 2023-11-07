@@ -5,7 +5,31 @@
     "kind": "pod",
     "version": "v1"
   },
+  "resource": {
+    "group": "",
+    "version": "v1",
+    "resource": "pods"
+  },
+  "requestKind": {
+    "group": "",
+    "version": "v1",
+    "kind": "Pod"
+  },
+  "requestResource": {
+    "group": "",
+    "version": "v1",
+    "resource": "pods"
+  },
+  "name": "nginx",
   "namespace": "default",
+  "operation": "CREATE",
+  "userInfo": {
+    "username": "kubernetes-admin",
+    "groups": [
+      "system:masters",
+      "system:authenticated"
+    ]
+  },
   "object": {
     "apiVersion": "v1",
     "kind": "Pod",
@@ -15,7 +39,7 @@
       "labels": {
         "cccenter": "foo",
         "owner": "team-alpha",
-	"location": "Earth"
+        "location": "Earth"
       }
     },
     "spec": {
