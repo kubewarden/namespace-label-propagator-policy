@@ -10,7 +10,9 @@ import (
 	batchv1 "github.com/kubewarden/k8s-objects/api/batch/v1"
 	corev1 "github.com/kubewarden/k8s-objects/api/core/v1"
 	metav1 "github.com/kubewarden/k8s-objects/apimachinery/pkg/apis/meta/v1"
-	capabilities "github.com/kubewarden/policy-sdk-go/pkg/capabilities"
+
+	"github.com/kubewarden/policy-sdk-go/pkg/capabilities/kubernetes"
+	"github.com/kubewarden/policy-sdk-go/pkg/capabilities/mocks"
 	kubewarden_protocol "github.com/kubewarden/policy-sdk-go/protocol"
 	kubewarden_testing "github.com/kubewarden/policy-sdk-go/testing"
 )
@@ -33,20 +35,6 @@ func buildValidationRequest(propagatedLabels []string, resource interface{}, kin
 		return nil, err
 	}
 	return payload, nil
-
-}
-func buildWapcClient(namespaceLabels map[string]string) error {
-	clientResponse := corev1.Namespace{
-		Metadata: &metav1.ObjectMeta{
-			Labels: namespaceLabels,
-		},
-	}
-	var err error
-	wapcClient, err = capabilities.NewSuccessfulMockWapcClient(clientResponse)
-	if err != nil {
-		return err
-	}
-	return nil
 
 }
 
@@ -118,10 +106,31 @@ func TestPodWithNoLabels(t *testing.T) {
 		t.Errorf("Unexpected error: %+v", err)
 	}
 
-	err = buildWapcClient(namespaceLabels)
+	
+	wapcRequest, err := json.Marshal(&kubernetes.GetResourceRequest{
+			APIVersion:   "v1",
+			Kind:         "Namespace",
+			Name:         "default",
+			DisableCache: false,
+		})
 	if err != nil {
-		t.Errorf("Unexpected error: %+v", err)
+		t.Errorf("Cannot create wapcRequest payload: %+v", err)
 	}
+
+	wapcResponse, err := json.Marshal(&corev1.Namespace{
+		Metadata: &metav1.ObjectMeta{
+			Labels: namespaceLabels,
+		},
+	})
+	if err != nil {
+		t.Errorf("Cannot create wapcResponse payload: %+v", err)
+	}
+
+	wapcClient := mocks.NewMockWapcClient(t)
+	wapcClient.On("HostCall", "kubewarden", "kubernetes", "get_resource",
+	wapcRequest).Return(wapcResponse, nil)
+
+	host.Client = wapcClient
 
 	responsePayload, err := validate(payload)
 	if err != nil {
@@ -170,10 +179,30 @@ func TestPodLabelsShouldNotMutateWithItHasTheExpectedValue(t *testing.T) {
 		t.Errorf("Unexpected error: %+v", err)
 	}
 
-	err = buildWapcClient(namespaceLabels)
+	wapcRequest, err := json.Marshal(&kubernetes.GetResourceRequest{
+			APIVersion:   "v1",
+			Kind:         "Namespace",
+			Name:         "default",
+			DisableCache: false,
+		})
 	if err != nil {
-		t.Errorf("Unexpected error: %+v", err)
+		t.Errorf("Cannot create wapcRequest payload: %+v", err)
 	}
+
+	wapcResponse, err := json.Marshal(&corev1.Namespace{
+		Metadata: &metav1.ObjectMeta{
+			Labels: namespaceLabels,
+		},
+	})
+	if err != nil {
+		t.Errorf("Cannot create wapcResponse payload: %+v", err)
+	}
+
+	wapcClient := mocks.NewMockWapcClient(t)
+	wapcClient.On("HostCall", "kubewarden", "kubernetes", "get_resource",
+	wapcRequest).Return(wapcResponse, nil)
+
+	host.Client = wapcClient
 
 	responsePayload, err := validate(payload)
 	if err != nil {
@@ -374,10 +403,30 @@ func TestLabelsShouldOverwrittenLabelsOnlyDefinedInSettings(t *testing.T) {
 				t.Errorf("Unexpected error: %+v", err)
 			}
 
-			err = buildWapcClient(tc.namespaceLabels)
+			wapcRequest, err := json.Marshal(&kubernetes.GetResourceRequest{
+					APIVersion:   "v1",
+					Kind:         "Namespace",
+					Name:         "default",
+					DisableCache: false,
+				})
 			if err != nil {
-				t.Errorf("Unexpected error: %+v", err)
+				t.Errorf("Cannot create wapcRequest payload: %+v", err)
 			}
+
+			wapcResponse, err := json.Marshal(&corev1.Namespace{
+				Metadata: &metav1.ObjectMeta{
+					Labels: tc.namespaceLabels,
+				},
+			})
+			if err != nil {
+				t.Errorf("Cannot create wapcResponse payload: %+v", err)
+			}
+
+			wapcClient := mocks.NewMockWapcClient(t)
+			wapcClient.On("HostCall", "kubewarden", "kubernetes", "get_resource",
+			wapcRequest).Return(wapcResponse, nil)
+
+			host.Client = wapcClient
 
 			responsePayload, err := validate(payload)
 			if err != nil {

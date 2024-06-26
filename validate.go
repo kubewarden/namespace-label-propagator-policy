@@ -10,6 +10,7 @@ import (
 	corev1 "github.com/kubewarden/k8s-objects/api/core/v1"
 	metav1 "github.com/kubewarden/k8s-objects/apimachinery/pkg/apis/meta/v1"
 	kubewarden "github.com/kubewarden/policy-sdk-go"
+	"github.com/kubewarden/policy-sdk-go/pkg/capabilities"
 	kubernetes "github.com/kubewarden/policy-sdk-go/pkg/capabilities/kubernetes"
 	kubewarden_protocol "github.com/kubewarden/policy-sdk-go/protocol"
 )
@@ -23,13 +24,13 @@ const CRONJOB_KIND = "cronjob"
 const JOB_KIND = "job"
 const POD_KIND = "pod"
 
+var host = capabilities.NewHost()
+
 func getNamespace(validationRequest kubewarden_protocol.ValidationRequest) (*corev1.Namespace, error) {
 
 	if len(validationRequest.Request.Namespace) == 0 {
 		return nil, fmt.Errorf("Admission request is missing namespace")
 	}
-
-	host := getWapcHost()
 
 	resourceRequest := kubernetes.GetResourceRequest{
 		APIVersion: "v1",
