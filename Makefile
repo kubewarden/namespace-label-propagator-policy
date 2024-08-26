@@ -9,7 +9,7 @@ policy.wasm: $(SOURCE_FILES) go.mod go.sum
 		--rm \
 		-e GOFLAGS="-buildvcs=false" \
 		-v ${PWD}:/src \
-		-w /src tinygo/tinygo:0.32.0 \
+		-w /src tinygo/tinygo:0.33.0 \
 		tinygo build -o policy.wasm -target=wasip1 -no-debug .
 
 artifacthub-pkg.yml: metadata.yml go.mod
