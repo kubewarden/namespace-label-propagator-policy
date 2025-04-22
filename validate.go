@@ -15,21 +15,22 @@ import (
 	kubewarden_protocol "github.com/kubewarden/policy-sdk-go/protocol"
 )
 
-const DEPLOYMENT_KIND = "deployment"
-const REPLICASET_KIND = "replicaset"
-const STATEFULSET_KIND = "statefulset"
-const DAEMONSET_KIND = "daemonset"
-const REPLICATIONCONTROLLER_KIND = "replicationcontroller"
-const CRONJOB_KIND = "cronjob"
-const JOB_KIND = "job"
-const POD_KIND = "pod"
+const (
+	DEPLOYMENT_KIND            = "deployment"
+	REPLICASET_KIND            = "replicaset"
+	STATEFULSET_KIND           = "statefulset"
+	DAEMONSET_KIND             = "daemonset"
+	REPLICATIONCONTROLLER_KIND = "replicationcontroller"
+	CRONJOB_KIND               = "cronjob"
+	JOB_KIND                   = "job"
+	POD_KIND                   = "pod"
+)
 
 var host = capabilities.NewHost()
 
 func getNamespace(validationRequest kubewarden_protocol.ValidationRequest) (*corev1.Namespace, error) {
-
 	if len(validationRequest.Request.Namespace) == 0 {
-		return nil, fmt.Errorf("Admission request is missing namespace")
+		return nil, fmt.Errorf("admission request is missing namespace")
 	}
 
 	resourceRequest := kubernetes.GetResourceRequest{
@@ -40,11 +41,11 @@ func getNamespace(validationRequest kubewarden_protocol.ValidationRequest) (*cor
 
 	responseBytes, err := kubernetes.GetResource(&host, resourceRequest)
 	if err != nil {
-		return nil, fmt.Errorf("Cannot get namespace data: %s", err)
+		return nil, fmt.Errorf("cannot get namespace data: %s", err)
 	}
 	namespace := &corev1.Namespace{}
 	if err := json.Unmarshal(responseBytes, namespace); err != nil {
-		return nil, fmt.Errorf("Cannot parse namespace data: %s", err)
+		return nil, fmt.Errorf("cannot parse namespace data: %s", err)
 	}
 	return namespace, nil
 }
@@ -57,7 +58,6 @@ func validateResourceLabels(namespaceLabels map[string]string, request kubewarde
 		}
 	}
 	return updateResourceLabels(request, labelsToPropagate)
-
 }
 
 // propagateLabels ensures the labels defined in the meta object contains the
